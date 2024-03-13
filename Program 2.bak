@@ -1,0 +1,83 @@
+#lang racket
+
+(require racket/system)
+
+(define (check-and-notify-required-packages package-list)
+  (for-each (lambda (package-name)
+              (let ([installed? (package-installed? package-name)])
+                (unless installed?
+                  (printf "The package '~a' is not installed. Please install it using the command: raco pkg install ~a\n"
+                          package-name package-name))))
+            package-list))
+
+(define (package-installed? package-name)
+  (with-output-to-string
+    (lambda ()
+      (system (format "raco pkg show ~a" package-name)))
+    #:trim #t))
+
+(define required-packages '("csv"))
+
+(check-and-notify-required-packages required-packages)
+
+;; Define a function to read the CSV file into a list of records
+(define (data-path symbol period)
+  (build-path "Video Game Sales" period (string-append symbol ".csv")))
+
+(struct hist (index rank game-title-platform year genre publisher north-america europe japan rest-of-wo global review)
+  #:transparent)
+
+;; Function to filter games by name (case-insensitive)
+(define (filter-by-name games name)
+  (filter (lambda (game) (string-ci=? (second game) name)) games))
+
+;; Function to filter games by date range
+(define (filter-by-date games start-year end-year)
+  (let ([start (min start-year end-year)]
+        [end (max start-year end-year)])
+    (filter (lambda (game)
+              (let ([year (string->number (fifth game))])
+                (and (<= start year) (<= year end))))
+            games)))
+
+;; Function to filter games by publisher (case-insensitive, partial match)
+(define (filter-by-publisher games publisher)
+  (filter (lambda (game)
+            (string-contains? (string-downcase (seventh game)) (string-downcase publisher)))
+          games))
+
+;; Function to filter games by region sales
+;; Assumes 'region' is one of: 'North America', 'Europe', 'Japan', 'Rest of World', 'Global'
+(define (filter-by-region games region)
+  (let ([index (case region
+                  [('North America) 8]
+                  [('Europe) 9]
+                  [('Japan) 10]
+                  [('Rest of World) 11]
+                  [('Global) 12]
+                  [else (error "Invalid region")])])
+    (filter (lambda (game) (> (string->number (list-ref game index)) 0)) games)))
+
+;; Function to filter games by genre
+(define (filter-by-genre games genre)
+  (filter (lambda (game) (string-ci=? (sixth game) genre)) games))
+
+;; Example usage:
+(define games-data (read-video-game-sales-data "/path/to/Video Games Sales.csv"))
+
+;; Example filtering (replace with dynamic user inputs)
+(define filtered-games (filter-by-name games-data "Example Game"))
+
+;; Sorting function placeholder (to be implemented)
+(define (sort-games games sort-by)
+  ;; Implement sorting logic based on 'sort-by' criteria ('rank' or 'review')
+  games)
+
+;; Main function to handle user interaction (to be implemented)
+(define (main)
+  ;; Implement user interaction logic here
+  )
+
+;; Note: Implement 'string-contains?' if not available by default in Racket
+(define (string-contains? string part)
+  (not (equal? (regexp-match (regexp-quote part) string) #f)))

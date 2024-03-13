@@ -1,0 +1,50 @@
+Import SCV reading capabilities
+
+SUBROUTINE readFile(filepath)
+	Open the file at filepath for reading
+	Read the file as a CSV and store its contents
+	RETURN the contents as a list of records
+ENDSUBROUTINE
+
+SUBROUTINE nameFilter(games, name)
+	Filter the games list where the game's name match the input name, case-insensitive
+	RETURN filtered games list
+ENDSUBROUTINE
+
+SUBROUTINE dateFilter(games, yearStart, yearEnd)
+	Determine correct start and end years (handle reverse order)
+	Filter the game list where the game's release year is within the start and end years
+	RETURN filtered games list
+ENDSUBROUTINE
+
+SUBROUTINE publisherFilter(games, publisher)
+	Filter the games list where the game's publishers contains the input publisher, case-insensitive
+	RETURN filtered games list
+ENDSUBROUTINE
+
+SUBROUTINE regionFilter(games, region)
+	Determine index corresponding to the region's sale data
+	Filter the games list where the region's sales are greater than 0
+	RETURN filtered games list
+ENDSUBROUTINE
+
+SUBROUTINE genreFilter
+	Filter the game's list where the game's genre matches the input genre, case-insensitive
+	RETURN filtered games list
+ENDSUBROUTINE
+
+SUBROUTINE sortGames(games, sort-by)
+	Sort the games list based on the specific sort-by critera (either rank or review)
+	RETURN sorted games list
+ENDSUBROUTINE
+
+SUBROUTINE main()
+	Implement user interaction for entering search criteria
+	Read CSV data file
+	Apply filters based on user input
+	Optionally sort the filtered list
+	Display the result to the user
+	Repeat or exit based on user input
+ENDSUBROUTINE
+
+main()
